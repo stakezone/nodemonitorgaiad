@@ -11,7 +11,7 @@ logsize=200            # the max number of lines after that the log will be trim
 sleep1=30              # polls every sleep1 sec
 #####  END CONFIG  ##################################################################################################
 
-if [ -z $logname ]; then logname="nodecheck-${USER}.log"; fi
+if [ -z $logname ]; then logname="nodemonitor-${USER}.log"; fi
 logfile="${logpath}/${logname}"
 touch $logfile
 echo "log file: ${logfile}"
