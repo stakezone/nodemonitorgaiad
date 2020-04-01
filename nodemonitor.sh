@@ -16,8 +16,9 @@ logfile="${logpath}/${logname}"
 touch $logfile
 echo "log file: ${logfile}"
 
+if [ -z $config ]; then echo "please configure config.toml in script"; exit 1;fi
 url=$(sed '/^\[rpc\]/,/^\[/!d;//d' $config | grep "^laddr\b" | awk -v FS='("tcp://|")' '{print $2}')
-if [ -z $url ]; then echo "please configure config.toml in script"; exit 1;fi
+if [ -z $url ]; then echo "please configure config.toml in script correctly"; exit 1;fi
 url="http://${url}"
 echo "lcd url: ${url}"
 
