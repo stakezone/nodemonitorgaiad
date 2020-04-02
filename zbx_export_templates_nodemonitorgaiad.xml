@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-02T05:55:13Z</date>
+    <date>2020-04-02T06:01:26Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -170,12 +170,11 @@ error can have various causes, typically the gaiad process is down.</description
             <macros>
                 <macro>
                     <macro>{$LOGFILE}</macro>
-                    <value>/home/kava2/nodemonitorgaiad/nodemonitor-kava2.log</value>
                     <description>Location of the nodemonitor log file on the host, example: /home/user/nodemonitor-user.log</description>
                 </macro>
                 <macro>
                     <macro>{$NODEID}</macro>
-                    <value>Kava</value>
+                    <value>Cosmos</value>
                     <description>Identifier for the node on the server (useful if more than one are hosted).</description>
                 </macro>
                 <macro>
