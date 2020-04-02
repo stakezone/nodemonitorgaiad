@@ -10,8 +10,9 @@ nodemonitor.sh produces log files that look like:
 2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 pctprecommits=1.00 npeers=12 npersistentpeersoff=0
 2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 pctprecommits=1.00 npeers=13 npersistentpeersoff=1
 ```
+For the Zabbix server there is a log module for analyzing log data.
 
-The script has a configuration section where various parameters must be set. The log line entries are:
+The script for the host has a configuration section where various parameters must be set. The log line entries are:
 
 * **status** can be {scriptstarted | error | catchingup | synced} 'error' can have various causes, typically the gaiad process is down
 * **blockheight** blockheight from lcd call 
