@@ -27,7 +27,7 @@ A Zabbix server is required that connects to the host running gaiad. On the host
 
 ### Note
 
-For monitoring multiple gaiad on the same host the Cosmos Gaiad template needs to be cloned in the template section of the server with the clone function.
+For monitoring multiple gaiad instances on the same host the Cosmos Gaiad template needs to be cloned in the template section of the server with the clone function.
 
 ### Issues
 
