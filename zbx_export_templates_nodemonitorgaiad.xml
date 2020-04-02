@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-01T23:07:43Z</date>
+    <date>2020-04-02T00:44:46Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -91,13 +91,13 @@
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{last()}&lt;1.0 and {last()}&gt;0.5</expression>
+                            <expression>{last()}&lt;0.95 and {last()}&gt;0.5</expression>
                             <name>{$NODEID} gaiad  0.95 &gt; %precommits &gt; 0.5</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{last()}&lt;1.0 and {last()}&gt;0.5</expression>
+                            <expression>{last()}&lt;1.0 and {last()}&gt;0.95</expression>
                             <name>{$NODEID} gaiad  1.0 &gt; %precommits &gt;= 0.95</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
@@ -112,6 +112,7 @@
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
+                    <description>error can have various causes, typically the gaiad process is down.</description>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
@@ -167,6 +168,7 @@
             <macros>
                 <macro>
                     <macro>{$LOGFILE}</macro>
+                    <value>/home/cosmos/nodemonitorgaiad/nodemonitor-cosmos.log</value>
                     <description>Location of the nodemonitor log file on the host, example: /home/user/nodemonitor-user.log</description>
                 </macro>
                 <macro>
