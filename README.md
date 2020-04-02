@@ -1,5 +1,5 @@
 # nodemonitorgaiad
-A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consists of the shell script nodemonitor.sh for generating log files on the host and the template zbx_export_templates_nodemonitorgaiad.xml for the Zabbix server.
+A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consists of the shell script nodemonitor.sh for generating log files on the host and the template zbx__template_nodemonitorgaiad.xml for the Zabbix server.
 
 ### Concept
 
