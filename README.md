@@ -12,8 +12,6 @@ nodemonitor.sh produces log files that look like:
 ```
 For the Zabbix server there is a log module for analyzing log data.
 
-The script for the host has a configuration section where various parameters must be set.
-
 The log line entries are:
 
 * **status** can be {scriptstarted | error | catchingup | synced} 'error' can have various causes, typically the gaiad process is down
@@ -24,6 +22,8 @@ The log line entries are:
 * **npersistentpeersoff** number of disconnected persistent peers
 
 ### Installation
+
+The script for the host has a configuration section where various parameters must be set.
 
 A Zabbix server is required that connects to the host running gaiad. On the host side the Zabbix agent needs to be installed and configured as active. There is various information on the Zabbix site and from other sources that outline how to connect a host to the server and utilize the standard Linux OS template for general monitoring. Once these steps are completed the gaiad template zbx_export_templates_nodemonitorgaiad.xml can be imported. Under `All templates/Template App Cosmos Gaiad` there is a `Macros` section with several parameters that need to be set, in particular the path to the log file of the host must be configured.
 
