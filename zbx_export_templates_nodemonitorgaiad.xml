@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-02T00:44:46Z</date>
+    <date>2020-04-02T05:55:13Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -40,7 +40,7 @@
                     <triggers>
                         <trigger>
                             <expression>{last()}&lt;={$THRSHLDPEERS}</expression>
-                            <name>{$NODEID} gaiad  npeers &lt;= {$THRSHLDPEERS}</name>
+                            <name>{$NODEID} npeers &lt;= {$THRSHLDPEERS}</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -63,7 +63,7 @@
                     <triggers>
                         <trigger>
                             <expression>{last()}&gt;={$THRSHLDPERSISTENTPEERS}</expression>
-                            <name>{$NODEID} gaiad  npersistentpeersoff &gt;= {$THRSHLDPERSISTENTPEERS}</name>
+                            <name>{$NODEID} npersistentpeersoff &gt;= {$THRSHLDPERSISTENTPEERS}</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -86,19 +86,19 @@
                     <triggers>
                         <trigger>
                             <expression>{last()}&lt;=0.5</expression>
-                            <name>{$NODEID} gaiad  %precommits &lt;= 0.5</name>
+                            <name>{$NODEID} %precommits &lt;= 0.5</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;0.95 and {last()}&gt;0.5</expression>
-                            <name>{$NODEID} gaiad  0.95 &gt; %precommits &gt; 0.5</name>
+                            <name>{$NODEID} 0.95 &gt; %precommits &gt; 0.5</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;1.0 and {last()}&gt;0.95</expression>
-                            <name>{$NODEID} gaiad  1.0 &gt; %precommits &gt;= 0.95</name>
+                            <name>{$NODEID} 1.0 &gt; %precommits &gt;= 0.95</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -112,7 +112,9 @@
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
-                    <description>error can have various causes, typically the gaiad process is down.</description>
+                    <description>scriptstarted | error | catchingup | synced&#13;
+&#13;
+error can have various causes, typically the gaiad process is down.</description>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
@@ -122,19 +124,19 @@
                     <triggers>
                         <trigger>
                             <expression>{str(catchingup)}=1</expression>
-                            <name>{$NODEID} gaiad status: catchingup</name>
+                            <name>{$NODEID} status: catchingup</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{str(error)}=1</expression>
-                            <name>{$NODEID} gaiad  status: error</name>
+                            <name>{$NODEID} status: error</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{str(scriptstarted)}=1</expression>
-                            <name>{$NODEID} gaiad  status: script started</name>
+                            <name>{$NODEID} status: script started</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -157,7 +159,7 @@
                     <triggers>
                         <trigger>
                             <expression>{last()}&gt;{$TLASTBLOCKFROMNOW}</expression>
-                            <name>{$NODEID} gaiad tfromnow &gt; {$TLASTBLOCKFROMNOW}</name>
+                            <name>{$NODEID} tfromnow &gt; {$TLASTBLOCKFROMNOW}</name>
                             <priority>WARNING</priority>
                             <description>the node is catching up</description>
                             <manual_close>YES</manual_close>
@@ -168,12 +170,12 @@
             <macros>
                 <macro>
                     <macro>{$LOGFILE}</macro>
-                    <value>/home/cosmos/nodemonitorgaiad/nodemonitor-cosmos.log</value>
+                    <value>/home/kava2/nodemonitorgaiad/nodemonitor-kava2.log</value>
                     <description>Location of the nodemonitor log file on the host, example: /home/user/nodemonitor-user.log</description>
                 </macro>
                 <macro>
                     <macro>{$NODEID}</macro>
-                    <value>Cosmos</value>
+                    <value>Kava</value>
                     <description>Identifier for the node on the server (useful if more than one are hosted).</description>
                 </macro>
                 <macro>
