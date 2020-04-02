@@ -25,7 +25,7 @@ The log line entries are:
 
 The script for the host has a configuration section where parameters can be set.
 
-A Zabbix server is required that connects to the host running gaiad. On the host side the Zabbix agent needs to be installed and configured for active mode (is not default). There is various information on the Zabbix site and from other sources that outline how to connect a host to the server and utilize the standard Linux OS template for general monitoring. Once these steps are completed the gaiad template zbx_export_templates_nodemonitorgaiad.xml can be imported. Under `All templates/Template App Cosmos Gaiad` there is a `Macros` section with several parameters that need to be set, in particular the path to the log file must be configured.
+A Zabbix server is required that connects to the host running gaiad. On the host side the Zabbix agent needs to be installed and configured for active mode (is not default). There is various information on the Zabbix site and from other sources that outline how to connect a host to the server and utilize the standard Linux OS template for general monitoring. Once these steps are completed the gaiad template zbx_export_templates_nodemonitorgaiad.xml can be imported. Under `All templates/Template App Cosmos Gaiad` there is a `Macros` section with several parameters that can be configured, in particular the path to the log file must be set. Do not change those values there, instead go to `Hosts` and select the particular host, then go to `Macros`, then to `Inherited and host macros`. There the macros from the generic template are mirrored for the specific host and can be set without affecting other hosts using the same template.
 
 ### Note
 
