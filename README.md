@@ -7,8 +7,8 @@ nodemonitor.sh produces logs that look like:
 
 ```sh
 2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 pctprecommits=.95 npeers=13 npersistentpeersoff=0
-2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 pctprecommits=1.00 npeers=12 npersistentpeersoff=0
-2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 pctprecommits=1.00 npeers=13 npersistentpeersoff=1
+2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 pctprecommits=1.00 npeers=12 npersistentpeersoff=1
+2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 pctprecommits=1.00 npeers=13 npersistentpeersoff=0
 ```
 For the Zabbix server there is a log module for analyzing log data.
 
