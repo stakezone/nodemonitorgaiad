@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-02T06:01:26Z</date>
+    <date>2020-04-02T21:27:29Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -26,8 +26,8 @@
                 <item>
                     <name>nodemonitor npeers</name>
                     <type>ZABBIX_ACTIVE</type>
-                    <key>log[{$LOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,]</key>
-                    <delay>2s</delay>
+                    <key>logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
@@ -39,8 +39,8 @@
                     <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&lt;={$THRSHLDPEERS}</expression>
-                            <name>{$NODEID} npeers &lt;= {$THRSHLDPEERS}</name>
+                            <expression>{last()}&lt;={$NMTHRSHLDPEERS}</expression>
+                            <name>{$NMNODEID} npeers &lt;= {$NMTHRSHLDPEERS} : n={ITEM.VALUE}</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -49,8 +49,8 @@
                 <item>
                     <name>nodemonitor npersistentpeersoff</name>
                     <type>ZABBIX_ACTIVE</type>
-                    <key>log[{$LOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,]</key>
-                    <delay>2s</delay>
+                    <key>logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
@@ -62,8 +62,8 @@
                     <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&gt;={$THRSHLDPERSISTENTPEERS}</expression>
-                            <name>{$NODEID} npersistentpeersoff &gt;= {$THRSHLDPERSISTENTPEERS}</name>
+                            <expression>{last()}&gt;={$NMTHRSHLDPERSISTENTPEERS}</expression>
+                            <name>{$NMNODEID} npersistentpeersoff &gt;= {$NMTHRSHLDPERSISTENTPEERS} : n={ITEM.VALUE}</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -72,8 +72,8 @@
                 <item>
                     <name>nodemonitor %precommits</name>
                     <type>ZABBIX_ACTIVE</type>
-                    <key>log[{$LOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,]</key>
-                    <delay>2s</delay>
+                    <key>logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
@@ -86,19 +86,19 @@
                     <triggers>
                         <trigger>
                             <expression>{last()}&lt;=0.5</expression>
-                            <name>{$NODEID} %precommits &lt;= 0.5</name>
+                            <name>{$NMNODEID} %precommits &lt;= 0.5 : pct={ITEM.VALUE}</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{last()}&lt;0.95 and {last()}&gt;0.5</expression>
-                            <name>{$NODEID} 0.95 &gt; %precommits &gt; 0.5</name>
+                            <name>{$NMNODEID} 0.95 &gt; %precommits &gt; 0.5 : pct={ITEM.VALUE}</name>
                             <priority>WARNING</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{last()}&lt;1.0 and {last()}&gt;0.95</expression>
-                            <name>{$NODEID} 1.0 &gt; %precommits &gt;= 0.95</name>
+                            <expression>{last()}&lt;1.0 and {last()}&gt;=0.95</expression>
+                            <name>{$NMNODEID} 1.0 &gt; %precommits &gt;= 0.95 : pct={ITEM.VALUE}</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -107,8 +107,8 @@
                 <item>
                     <name>nodemonitor status</name>
                     <type>ZABBIX_ACTIVE</type>
-                    <key>log[{$LOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,]</key>
-                    <delay>2s</delay>
+                    <key>logrt[{$NMLOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
@@ -124,19 +124,19 @@ error can have various causes, typically the gaiad process is down.</description
                     <triggers>
                         <trigger>
                             <expression>{str(catchingup)}=1</expression>
-                            <name>{$NODEID} status: catchingup</name>
+                            <name>{$NMNODEID} status: catchingup</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{str(error)}=1</expression>
-                            <name>{$NODEID} status: error</name>
+                            <expression>{regexp(error)}=1</expression>
+                            <name>{$NMNODEID} status: error</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{str(scriptstarted)}=1</expression>
-                            <name>{$NODEID} status: script started</name>
+                            <expression>{regexp(scriptstarted,1)}=1</expression>
+                            <name>{$NMNODEID} status: script started</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -145,8 +145,8 @@ error can have various causes, typically the gaiad process is down.</description
                 <item>
                     <name>nodemonitor tfromnow</name>
                     <type>ZABBIX_ACTIVE</type>
-                    <key>log[{$LOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,]</key>
-                    <delay>2s</delay>
+                    <key>logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
                     <history>30d</history>
                     <trends>0</trends>
                     <value_type>LOG</value_type>
@@ -158,8 +158,8 @@ error can have various causes, typically the gaiad process is down.</description
                     <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&gt;{$TLASTBLOCKFROMNOW}</expression>
-                            <name>{$NODEID} tfromnow &gt; {$TLASTBLOCKFROMNOW}</name>
+                            <expression>{last()}&gt;{$NMTLASTBLOCKFROMNOW}</expression>
+                            <name>{$NMNODEID} tfromnow &gt; {$NMTLASTBLOCKFROMNOW} : T={ITEM.VALUE}</name>
                             <priority>WARNING</priority>
                             <description>the node is catching up</description>
                             <manual_close>YES</manual_close>
@@ -169,30 +169,48 @@ error can have various causes, typically the gaiad process is down.</description
             </items>
             <macros>
                 <macro>
-                    <macro>{$LOGFILE}</macro>
+                    <macro>{$NMLOGFILE}</macro>
                     <description>Location of the nodemonitor log file on the host, example: /home/user/nodemonitor-user.log</description>
                 </macro>
                 <macro>
-                    <macro>{$NODEID}</macro>
+                    <macro>{$NMNODATA}</macro>
+                    <value>120</value>
+                    <description>Time is seconds for no data received trigger</description>
+                </macro>
+                <macro>
+                    <macro>{$NMNODEID}</macro>
                     <value>Cosmos</value>
                     <description>Identifier for the node on the server (useful if more than one are hosted).</description>
                 </macro>
                 <macro>
-                    <macro>{$THRSHLDPEERS}</macro>
+                    <macro>{$NMTHRSHLDPEERS}</macro>
                     <value>2</value>
                     <description>This is the default threshold value for min. connected peers. In future versions of the nodemonitor script we intend to derive a percentage figure from node configuration data.</description>
                 </macro>
                 <macro>
-                    <macro>{$THRSHLDPERSISTENTPEERS}</macro>
+                    <macro>{$NMTHRSHLDPERSISTENTPEERS}</macro>
                     <value>1</value>
                     <description>Default threshold value for max disconnected persistent peers.</description>
                 </macro>
                 <macro>
-                    <macro>{$TLASTBLOCKFROMNOW}</macro>
+                    <macro>{$NMTLASTBLOCKFROMNOW}</macro>
                     <value>300</value>
                     <description>Time in seconds from the blockheight in the logfile that triggers a warning (chain halt detection).</description>
+                </macro>
+                <macro>
+                    <macro>{$NMUPDATEINTERVAL}</macro>
+                    <value>2s</value>
+                    <description>update interval for items</description>
                 </macro>
             </macros>
         </template>
     </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1</expression>
+            <name>{$NMNODEID} no log data T &gt; {$NMNODATA}</name>
+            <priority>HIGH</priority>
+            <manual_close>YES</manual_close>
+        </trigger>
+    </triggers>
 </zabbix_export>
