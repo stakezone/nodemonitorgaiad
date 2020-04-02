@@ -33,6 +33,6 @@ For monitoring multiple gaiad instances on the same host the Cosmos Gaiad templa
 
 ### Issues
 
-The Zabbix server is low on resources and a small size VPS is sufficient. However, delays can occur with the log file module. Performance problems with the server are mostly caused by the underlying database slowing down the processing. Database tuning might improve on the issues (ie. more cache size etc.).
-
 The gaiad triggers are not optimized and interconnected yet, some redundant alerts might occur.
+
+The Zabbix server is low on resources and a small size VPS is sufficient. However, delays can occur with the log file module. Performance problems with the server are mostly caused by the underlying database slowing down the processing. Database tuning might improve on the issues (ie. more cache size etc.).
