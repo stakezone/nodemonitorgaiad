@@ -3,7 +3,7 @@ A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consis
 
 ### Concept
 
-nodemonitor.sh produces log files that look like:
+nodemonitor.sh produces logs that look like:
 
 ```sh
 2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 pctprecommits=.95 npeers=13 npersistentpeersoff=0
@@ -35,4 +35,4 @@ For monitoring multiple gaiad instances on the same host the Cosmos Gaiad templa
 
 The gaiad triggers are not optimized and interconnected yet, some redundant alerts might occur.
 
-The Zabbix server is low on resources and a small size VPS is sufficient. However, delays can occur with the log file module. Performance problems with the server are mostly caused by the underlying database slowing down the processing. Database tuning might improve on the issues (ie. more cache size etc.).
+The Zabbix server is low on resources and a small size VPS is sufficient. However, delays can occur with the log file module. Performance problems with the server are mostly caused by the underlying database slowing down the processing. Database tuning might improve on the issues (increase cache size etc.).
