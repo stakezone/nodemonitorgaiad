@@ -1,26 +1,32 @@
 #!/bin/bash
 
+#####    Packages required: jq, bc
+
 #####    CONFIG    ##################################################################################################
-config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
+config="/home/cosmos/.gaiad/config/config.toml"              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
-logname=""             # a custom log file name can be chosen, if left empty default is nodemonitor-<username>.log
+logname=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
 logpath="$(pwd)"       # the directory where the log file is stored, for customization insert path like: /my/path
 logsize=200            # the max number of lines after that the log will be trimmed to reduce its size
 sleep1=30              # polls every sleep1 sec
 #####  END CONFIG  ##################################################################################################
 
-if [ -z $logname ]; then logname="nodemonitor-${USER}.log"; fi
-logfile="${logpath}/${logname}"
-touch $logfile
-echo "log file: ${logfile}"
 
 if [ -z $config ]; then echo "please configure config.toml in script"; exit 1;fi
 url=$(sed '/^\[rpc\]/,/^\[/!d;//d' $config | grep "^laddr\b" | awk -v FS='("tcp://|")' '{print $2}')
+chainid=$(jq -r '.result.node_info.network' <<<$(curl -s "$url"/status))
 if [ -z $url ]; then echo "please configure config.toml in script correctly"; exit 1;fi
 url="http://${url}"
+
+if [ -z $logname ]; then logname="nodemonitor-${USER}.log"; fi
+logfile="${logpath}/${logname}"
+touch $logfile
+
+echo "log file: ${logfile}"
 echo "lcd url: ${url}"
+echo "chain id: ${chainid}"
 
 if [ -z $validatoraddress ]; then validatoraddress=$(jq -r '.result.validator_info.address' <<<$(curl -s "$url"/status)); fi
 if [ -z $validatoraddress ]; then
@@ -44,7 +50,7 @@ date=$(date --rfc-3339=seconds)
 
 nloglines=$(wc -l <$logfile)
 if [ $nloglines -gt $logsize ]; then sed -i "1,$(expr $nloglines - $logsize)d" $logfile; fi # the log file is trimmed for logsize
-echo "$date status=scriptstarted" >>$logfile
+echo "$date status=scriptstarted chainid=$chainid" >>$logfile
 
 while true; do
     status=$(curl -s "$url"/status)
