@@ -29,7 +29,7 @@ A Zabbix server is required that connects to the host running gaiad. On the host
 
 For monitoring multiple gaiad on the same host the Cosmos Gaiad template needs to be cloned in the template section of the server with the clone function.
 
-###Issues
+### Issues
 
 The Zabbix server is low on resources and a small size VPS is sufficient. However, delays can occur with the log file module. Performance problems with the server are mostly an issue of the underlying database slowing down the processing. Database tuning might improve the slowness (ie. more cache size etc.).
 
