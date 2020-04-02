@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-02T21:27:29Z</date>
+    <date>2020-04-02T21:57:48Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -123,6 +123,12 @@ error can have various causes, typically the gaiad process is down.</description
                     <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
+                            <expression>{nodata({$NMNODATA})}=1</expression>
+                            <name>{$NMNODEID} no log data T &gt; {$NMNODATA}</name>
+                            <priority>HIGH</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                        <trigger>
                             <expression>{str(catchingup)}=1</expression>
                             <name>{$NMNODEID} status: catchingup</name>
                             <priority>INFO</priority>
@@ -205,12 +211,4 @@ error can have various causes, typically the gaiad process is down.</description
             </macros>
         </template>
     </templates>
-    <triggers>
-        <trigger>
-            <expression>{Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1 and {Template App Cosmos Gaiad:logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,].nodata({$NMNODATA})}=1</expression>
-            <name>{$NMNODEID} no log data T &gt; {$NMNODATA}</name>
-            <priority>HIGH</priority>
-            <manual_close>YES</manual_close>
-        </trigger>
-    </triggers>
 </zabbix_export>
