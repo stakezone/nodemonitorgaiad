@@ -3,7 +3,7 @@
 #####    Packages required: jq, bc
 
 #####    CONFIG    ##################################################################################################
-config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
+config="/home/regen2/.xrnd/config/config.toml"              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
@@ -14,10 +14,10 @@ sleep1=30              # polls every sleep1 sec
 #####  END CONFIG  ##################################################################################################
 
 
-if [ -z $config ]; then echo "please configure config.toml in script"; exit 1;fi
+if [ -z $config ]; then echo "please configure config.toml in script"; exit 1; fi
 url=$(sed '/^\[rpc\]/,/^\[/!d;//d' $config | grep "^laddr\b" | awk -v FS='("tcp://|")' '{print $2}')
 chainid=$(jq -r '.result.node_info.network' <<<$(curl -s "$url"/status))
-if [ -z $url ]; then echo "please configure config.toml in script correctly"; exit 1;fi
+if [ -z $url ]; then echo "please configure config.toml in script correctly"; exit 1; fi
 url="http://${url}"
 
 if [ -z $logname ]; then logname="nodemonitor-${USER}.log"; fi
@@ -52,6 +52,8 @@ nloglines=$(wc -l <$logfile)
 if [ $nloglines -gt $logsize ]; then sed -i "1,$(expr $nloglines - $logsize)d" $logfile; fi # the log file is trimmed for logsize
 echo "$date status=scriptstarted chainid=$chainid" >>$logfile
 
+versiontest=0
+
 while true; do
     status=$(curl -s "$url"/status)
     result=$(grep -c "result" <<<$status)
@@ -63,11 +65,18 @@ while true; do
         blocktime=$(jq -r '.result.sync_info.latest_block_time' <<<$status)
         catchingup=$(jq -r '.result.sync_info.catching_up' <<<$status)
         if [ $catchingup == "false" ]; then catchingup="synced"; elif [ $catchingup == "true" ]; then catchingup="catchingup"; fi
-        validatoraddresses=$(curl -s "$url"/block?height="$blockheight" | jq '.result.block.last_commit.precommits[].validator_address')
+        validatoraddresses=$(curl -s "$url"/block?height="$blockheight")
+        if [ $versiontest -eq 0 ]; then
+           if [ "$(grep -c 'precommits' <<<$validatoraddresses)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$validatoraddresses)" != "0" ]; then versionstring="signatures"; else echo "json parameters of this version not recognised" && exit 1; fi
+        versiontest=1
+        fi
+
+        validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
         validatorprecommit=$(grep -c "$validatoraddress" <<<$validatoraddresses)
         precommitcount=0
         for ((i = $(expr $blockheight - $nprecommits + 1); i <= $blockheight; i++)); do
-            validatoraddresses=$(curl -s "$url"/block?height="$i" | jq '.result.block.last_commit.precommits[].validator_address')
+            validatoraddresses=$(curl -s "$url"/block?height="$i")
+            validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
             validatorprecommit=$(grep -c "$validatoraddress" <<<$validatoraddresses)
             precommitcount=$(expr $precommitcount + $validatorprecommit)
         done
