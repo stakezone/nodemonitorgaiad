@@ -3,7 +3,7 @@
 #####    Packages required: jq, bc
 
 #####    CONFIG    ##################################################################################################
-config="/home/regen2/.xrnd/config/config.toml"              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
+config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
