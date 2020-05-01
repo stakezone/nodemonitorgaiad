@@ -68,7 +68,7 @@ while true; do
         validatoraddresses=$(curl -s "$url"/block?height="$blockheight")
         if [ $versiontest -eq 0 ]; then
            if [ "$(grep -c 'precommits' <<<$validatoraddresses)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$validatoraddresses)" != "0" ]; then versionstring="signatures"; else echo "json parameters of this version not recognised" && exit 1; fi
-        versiontest=1
+           versiontest=1
         fi
 
         validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
