@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>4.4</version>
-    <date>2020-04-02T21:57:48Z</date>
+    <date>2020-05-02T08:44:33Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -28,15 +28,12 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>30d</history>
-                    <trends>0</trends>
-                    <value_type>LOG</value_type>
+                    <history>5d</history>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
                         </application>
                     </applications>
-                    <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
                             <expression>{last()}&lt;={$NMTHRSHLDPEERS}</expression>
@@ -51,15 +48,12 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>30d</history>
-                    <trends>0</trends>
-                    <value_type>LOG</value_type>
+                    <history>5d</history>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
                         </application>
                     </applications>
-                    <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
                             <expression>{last()}&gt;={$NMTHRSHLDPERSISTENTPEERS}</expression>
@@ -74,15 +68,13 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>30d</history>
-                    <trends>0</trends>
-                    <value_type>LOG</value_type>
+                    <history>5d</history>
+                    <value_type>FLOAT</value_type>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
                         </application>
                     </applications>
-                    <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
                             <expression>{last()}&lt;=0.5</expression>
@@ -109,9 +101,9 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>30d</history>
+                    <history>5d</history>
                     <trends>0</trends>
-                    <value_type>LOG</value_type>
+                    <value_type>CHAR</value_type>
                     <description>scriptstarted | error | catchingup | synced&#13;
 &#13;
 error can have various causes, typically the gaiad process is down.</description>
@@ -120,29 +112,28 @@ error can have various causes, typically the gaiad process is down.</description
                             <name>Cosmos Gaiad</name>
                         </application>
                     </applications>
-                    <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
                             <expression>{nodata({$NMNODATA})}=1</expression>
-                            <name>{$NMNODEID} no log data T &gt; {$NMNODATA}</name>
+                            <name>{$NMNODEID} no log data : T &gt; {$NMNODATA}</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
                             <expression>{str(catchingup)}=1</expression>
-                            <name>{$NMNODEID} status: catchingup</name>
+                            <name>{$NMNODEID} status : catchingup</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{regexp(error)}=1</expression>
-                            <name>{$NMNODEID} status: error</name>
+                            <expression>{str(error)}=1</expression>
+                            <name>{$NMNODEID} status : error</name>
                             <priority>HIGH</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
-                            <expression>{regexp(scriptstarted,1)}=1</expression>
-                            <name>{$NMNODEID} status: script started</name>
+                            <expression>{str(scriptstarted)}=1</expression>
+                            <name>{$NMNODEID} status : script started</name>
                             <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
@@ -153,21 +144,17 @@ error can have various causes, typically the gaiad process is down.</description
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>30d</history>
-                    <trends>0</trends>
-                    <value_type>LOG</value_type>
+                    <history>5d</history>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
                         </application>
                     </applications>
-                    <logtimefmt>yyyy-MM-ddxhh:mm:ss+xx:xx</logtimefmt>
                     <triggers>
                         <trigger>
                             <expression>{last()}&gt;{$NMTLASTBLOCKFROMNOW}</expression>
                             <name>{$NMNODEID} tfromnow &gt; {$NMTLASTBLOCKFROMNOW} : T={ITEM.VALUE}</name>
                             <priority>WARNING</priority>
-                            <description>the node is catching up</description>
                             <manual_close>YES</manual_close>
                         </trigger>
                     </triggers>
@@ -211,4 +198,42 @@ error can have various causes, typically the gaiad process is down.</description
             </macros>
         </template>
     </templates>
+    <graphs>
+        <graph>
+            <name>gaiad metrics</name>
+            <graph_items>
+                <graph_item>
+                    <color>199C0D</color>
+                    <item>
+                        <host>Template App Cosmos Gaiad</host>
+                        <key>logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>F63100</color>
+                    <item>
+                        <host>Template App Cosmos Gaiad</host>
+                        <key>logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>2774A4</color>
+                    <item>
+                        <host>Template App Cosmos Gaiad</host>
+                        <key>logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>F7941D</color>
+                    <item>
+                        <host>Template App Cosmos Gaiad</host>
+                        <key>logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,]</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
 </zabbix_export>
