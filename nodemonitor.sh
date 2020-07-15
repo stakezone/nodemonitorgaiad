@@ -4,13 +4,14 @@
 
 #####    CONFIG    ##################################################################################################
 config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
+##### optional:        #
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
 logname=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
 logpath="$(pwd)"       # the directory where the log file is stored, for customization insert path like: /my/path
 logsize=200            # the max number of lines after that the log will be trimmed to reduce its size
-sleep1=30              # polls every sleep1 sec
+sleep1=30s              # polls every sleep1 sec
 #####  END CONFIG  ##################################################################################################
 
 
@@ -46,13 +47,21 @@ if [ $nprecommits -eq 0 ]; then echo "precommit checks: off"; else echo "precomm
 if [ $checkpersistentpeers -eq 0 ]; then echo "persistent peer checks: off"; else echo "persistent peer checks: on"; fi
 echo ""
 
-date=$(date --rfc-3339=seconds)
+status=$(curl -s "$url"/status)
+blockheight=$(jq -r '.result.sync_info.latest_block_height' <<<$status)
+blockinfo=$(curl -s "$url"/block?height="$blockheight")
+if [ $blockheight -gt $nprecommits ]; then
+   if [ "$(grep -c 'precommits' <<<$blockinfo)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$blockinfo)" != "0" ]; then versionstring="signatures"; else echo "json parameters of this version not recognised" && exit 1; fi
+else
+   echo "wait for $nprecommits blocks and start again..." && exit 1
+fi
+echo $versionstring
 
 nloglines=$(wc -l <$logfile)
 if [ $nloglines -gt $logsize ]; then sed -i "1,$(expr $nloglines - $logsize)d" $logfile; fi # the log file is trimmed for logsize
-echo "$date status=scriptstarted chainid=$chainid" >>$logfile
 
-versiontest=0
+date=$(date --rfc-3339=seconds)
+echo "$date status=scriptstarted chainid=$chainid" >>$logfile
 
 while true; do
     status=$(curl -s "$url"/status)
@@ -65,12 +74,7 @@ while true; do
         blocktime=$(jq -r '.result.sync_info.latest_block_time' <<<$status)
         catchingup=$(jq -r '.result.sync_info.catching_up' <<<$status)
         if [ $catchingup == "false" ]; then catchingup="synced"; elif [ $catchingup == "true" ]; then catchingup="catchingup"; fi
-        validatoraddresses=$(curl -s "$url"/block?height="$blockheight")
-        if [ $versiontest -eq 0 ]; then
-           if [ "$(grep -c 'precommits' <<<$validatoraddresses)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$validatoraddresses)" != "0" ]; then versionstring="signatures"; else echo "json parameters of this version not recognised" && exit 1; fi
-           versiontest=1
-        fi
-        validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
+        validatoraddresses=$(curl -s "$url"/block?height="$blockheight" | jq '.result.block.last_commit.precommits[].validator_address')
         validatorprecommit=$(grep -c "$validatoraddress" <<<$validatoraddresses)
         precommitcount=0
         for ((i = $(expr $blockheight - $nprecommits + 1); i <= $blockheight; i++)); do
