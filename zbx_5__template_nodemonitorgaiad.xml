@@ -37,7 +37,7 @@
                     </applications>
                     <triggers>
                         <trigger>
-                            <expression>{last(#1)}&lt;= 0.85*{avg(10m,30m)}</expression>
+                            <expression>{last(#1)}&lt;= 0.85*{avg(1d,1d)}</expression>
                             <name>{$NMNODEID} npeers 15% below 1d avg : n={ITEM.VALUE}</name>
                             <status>DISABLED</status>
                             <priority>INFO</priority>
