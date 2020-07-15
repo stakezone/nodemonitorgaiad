@@ -11,7 +11,7 @@ checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is che
 logname=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
 logpath="$(pwd)"       # the directory where the log file is stored, for customization insert path like: /my/path
 logsize=200            # the max number of lines after that the log will be trimmed to reduce its size
-sleep1=30s              # polls every sleep1 sec
+sleep1=30s             # polls every sleep1 sec
 #####  END CONFIG  ##################################################################################################
 
 
@@ -55,7 +55,6 @@ if [ $blockheight -gt $nprecommits ]; then
 else
    echo "wait for $nprecommits blocks and start again..." && exit 1
 fi
-echo $versionstring
 
 nloglines=$(wc -l <$logfile)
 if [ $nloglines -gt $logsize ]; then sed -i "1,$(expr $nloglines - $logsize)d" $logfile; fi # the log file is trimmed for logsize
