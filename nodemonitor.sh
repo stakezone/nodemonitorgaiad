@@ -5,7 +5,7 @@
 #####    CONFIG    ##################################################################################################
 config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 ##### optional:        #
-nprecommits=20         # check last n precommits, can be 0 for no checking
+nprecommits=0         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
 logname=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
@@ -38,9 +38,17 @@ echo "validator address: $validatoraddress"
 
 if [ "$checkpersistentpeers" -eq 1 ]; then
     persistentpeers=$(sed '/^\[p2p\]/,/^\[/!d;//d' $config | grep "^persistent_peers\b" | awk -v FS='("|")' '{print $2}')
-    persistentpeerids=$(sed 's/@[0-9.:,]\+/ /g' <<<$persistentpeers)
+    persistentpeerids=$(sed 's/,//g' <<< $(sed 's/@[^ ^,]\+/ /g' <<<$persistentpeers))
     totpersistentpeerids=$(wc -w <<<$persistentpeerids)
+    npersistentpeersmatch=0
+    netinfo=$(curl -s "$url"/net_info); if [ -z "$netinfo" ]; then echo "lcd appears to be down, start script again when data can be obtained"; exit 1; fi
+       for id in $persistentpeerids; do
+          npersistentpeersmatch=$(expr $npersistentpeersmatch + $(grep -c "$id" <<<$netinfo))
+          if [ $npersistentpeersmatch -eq 0 ]; then persistentpeersmatch="$persistentpeersmatch $id"; fi
+       done
+    npersistentpeersoff=$(expr $totpersistentpeerids - $npersistentpeersmatch)
     echo "$totpersistentpeerids persistent peers: $persistentpeerids"
+    echo "$npersistentpeersoff persistent peers off: $persistentpeersmatch"
 fi
 
 if [ $nprecommits -eq 0 ]; then echo "precommit checks: off"; else echo "precommit checks: on"; fi
