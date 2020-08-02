@@ -40,15 +40,18 @@ if [ "$checkpersistentpeers" -eq 1 ]; then
     persistentpeers=$(sed '/^\[p2p\]/,/^\[/!d;//d' $config | grep "^persistent_peers\b" | awk -v FS='("|")' '{print $2}')
     persistentpeerids=$(sed 's/,//g' <<< $(sed 's/@[^ ^,]\+/ /g' <<<$persistentpeers))
     totpersistentpeerids=$(wc -w <<<$persistentpeerids)
-    npersistentpeersmatch=0
+    npersistentpeersmatchcount=0
     netinfo=$(curl -s "$url"/net_info); if [ -z "$netinfo" ]; then echo "lcd appears to be down, start script again when data can be obtained"; exit 1; fi
        for id in $persistentpeerids; do
-          npersistentpeersmatch=$(expr $npersistentpeersmatch + $(grep -c "$id" <<<$netinfo))
-          if [ $npersistentpeersmatch -eq 0 ]; then persistentpeersmatch="$persistentpeersmatch $id"; fi
+          npersistentpeersmatch=$(grep -c "$id" <<<$netinfo)
+          if [ $npersistentpeersmatch -eq 0 ]; then
+             persistentpeersmatch="$id $persistentpeersmatch"
+             npersistentpeersmatchcount=$(expr $npersistentpeersmatchcount + 1)
+          fi
        done
-    npersistentpeersoff=$(expr $totpersistentpeerids - $npersistentpeersmatch)
+    npersistentpeersoff=$(expr $totpersistentpeerids - $npersistentpeersmatchcount)
     echo "$totpersistentpeerids persistent peers: $persistentpeerids"
-    echo "$npersistentpeersoff persistent peers off: $persistentpeersmatch"
+    echo "$npersistentpeersmatchcount persistent peers off: $persistentpeersmatch"
 fi
 
 if [ $nprecommits -eq 0 ]; then echo "precommit checks: off"; else echo "precommit checks: on"; fi
