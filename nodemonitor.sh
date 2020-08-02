@@ -81,8 +81,6 @@ while true; do
         blocktime=$(jq -r '.result.sync_info.latest_block_time' <<<$status)
         catchingup=$(jq -r '.result.sync_info.catching_up' <<<$status)
         if [ $catchingup == "false" ]; then catchingup="synced"; elif [ $catchingup == "true" ]; then catchingup="catchingup"; fi
-        validatoraddresses=$(curl -s "$url"/block?height="$blockheight" | jq '.result.block.last_commit.precommits[].validator_address')
-        validatorprecommit=$(grep -c "$validatoraddress" <<<$validatoraddresses)
         precommitcount=0
         for ((i = $(expr $blockheight - $nprecommits + 1); i <= $blockheight; i++)); do
             validatoraddresses=$(curl -s "$url"/block?height="$i")
