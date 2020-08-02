@@ -5,7 +5,7 @@
 #####    CONFIG    ##################################################################################################
 config=""              # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 ##### optional:        #
-nprecommits=0         # check last n precommits, can be 0 for no checking
+nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
 checkpersistentpeers=1 # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
 logname=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
