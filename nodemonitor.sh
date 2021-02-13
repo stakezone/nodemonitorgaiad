@@ -3,7 +3,7 @@
 ###    Packages required: jq, bc
 
 ###    CONFIG    ##################################################################################################
-config="" # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
+config=""              # config.toml file for node, eg. $HOME/.gaiad/config/config.toml
 ### optional:          #
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
