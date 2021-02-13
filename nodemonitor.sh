@@ -3,7 +3,7 @@
 ###    Packages required: jq, bc
 
 ###    CONFIG    ##################################################################################################
-config=""              # config.toml file for node, eg. $HOME/.gaiad/config/config.toml
+config="" # config.toml file for node, eg. /home/user/.gaiad/config/config.toml
 ### optional:          #
 nprecommits=20         # check last n precommits, can be 0 for no checking
 validatoraddress=""    # if left empty default is from status call (validator)
@@ -108,14 +108,13 @@ while true; do
                 validatorprecommit=$(grep -c "$validatoraddress" <<<$validatoraddresses)
                 precommitcount=$(expr $precommitcount + $validatorprecommit)
             done
-            pctprecommits=$(echo "scale=2 ; $precommitcount / $nprecommits" | bc)
+            if [ $nprecommits -eq 0 ]; then pctprecommits="1.0"; else pctprecommits=$(echo "scale=2 ; $precommitcount / $nprecommits" | bc); fi
             validatorinfo="isvalidator=$isvalidator pctprecommits=$pctprecommits"
         else
             isvalidator="no"
             validatorinfo="isvalidator=$isvalidator"
         fi
-        #if [ $nprecommits -eq 0 ]; then pctprecommits="1.0"; else pctprecommits=$(echo "scale=2 ; $precommitcount / $nprecommits" | bc); fi
-
+ 
         if [ "$checkpersistentpeers" -eq 1 ]; then
             npersistentpeersmatch=0
             netinfo=$(curl -s "$url"/net_info)
