@@ -7,22 +7,23 @@
 ###    if suppressing error messages is preferred, run as './nodemonitor.sh 2> /dev/null'
 
 ###    CONFIG    ##################################################################################################
-CONFIG=""              # config.toml file for node, eg. $HOME/.gaia/config/config.toml
-### optional:          #
-NPRECOMMITS="20"       # check last n precommits, can be 0 for no checking
-VALIDATORADDRESS=""    # if left empty default is from status call (validator)
+CONFIG=""                # config.toml file for node, eg. $HOME/.gaia/config/config.toml
+### optional:            #
+NPRECOMMITS="20"         # check last n precommits, can be 0 for no checking
+VALIDATORADDRESS=""      # if left empty default is from status call (validator)
 CHECKPERSISTENTPEERS="1" # if 1 the number of disconnected persistent peers is checked (when persistent peers are configured in config.toml)
-LOGNAME=""             # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
-LOGPATH="$(pwd)"       # the directory where the log file is stored, for customization insert path like: /my/path
-LOGSIZE=200            # the max number of lines after that the log will be trimmed to reduce its size
-LOGROTATION="1"        # options for log rotation: (1) rotate to $LOGNAME.1 every $LOGSIZE lines;  (2) append to $LOGNAME.1 every $LOGSIZE lines; (3) truncate $logfile to $LOGSIZE every iteration
-SLEEP1="30s"           # polls every SLEEP1 sec
-###  internal:         #
-colorI='\033[0;32m'    # black 30, red 31, green 32, yellow 33, blue 34, magenta 35, cyan 36, white 37
-colorD='\033[0;90m'    # for light color 9 instead of 3
-colorE='\033[0;31m'    #
-colorW='\033[0;33m'    #
-noColor='\033[0m'      # no color
+VALIDATORMETRICS="on"    # metrics for validator node
+LOGNAME=""               # a custom log file name can be chosen, if left empty default is nodecheck-<username>.log
+LOGPATH="$(pwd)"         # the directory where the log file is stored, for customization insert path like: /my/path
+LOGSIZE=200              # the max number of lines after that the log will be trimmed to reduce its size
+LOGROTATION="1"          # options for log rotation: (1) rotate to $LOGNAME.1 every $LOGSIZE lines;  (2) append to $LOGNAME.1 every $LOGSIZE lines; (3) truncate $logfile to $LOGSIZE every iteration
+SLEEP1="30s"             # polls every SLEEP1 sec
+###  internal:           #
+colorI='\033[0;32m'      # black 30, red 31, green 32, yellow 33, blue 34, magenta 35, cyan 36, white 37
+colorD='\033[0;90m'      # for light color 9 instead of 3
+colorE='\033[0;31m'      #
+colorW='\033[0;33m'      #
+noColor='\033[0m'        # no color
 ###  END CONFIG  ##################################################################################################
 
 if [ -z $CONFIG ]; then
@@ -31,7 +32,10 @@ if [ -z $CONFIG ]; then
 fi
 url=$(sed '/^\[rpc\]/,/^\[/!d;//d' $CONFIG | grep "^laddr\b" | awk -v FS='("tcp://|")' '{print $2}')
 chainid=$(jq -r '.result.node_info.network' <<<$(curl -s "$url"/status))
-if [ -z $url ]; then echo "please configure config.toml in script correctly"; exit 1; fi
+if [ -z $url ]; then
+    echo "please configure config.toml in script correctly"
+    exit 1
+fi
 url="http://${url}"
 
 if [ -z $LOGNAME ]; then LOGNAME="nodemonitor-${USER}.log"; fi
@@ -43,7 +47,10 @@ echo "rpc url: ${url}"
 echo "chain id: ${chainid}"
 
 if [ -z $VALIDATORADDRESS ]; then VALIDATORADDRESS=$(jq -r '.result.validator_info.address' <<<$(curl -s "$url"/status)); fi
-if [ -z $VALIDATORADDRESS ]; then echo "rpc appears to be down, start script again when data can be obtained"; exit 1; fi
+if [ -z $VALIDATORADDRESS ]; then
+    echo "rpc appears to be down, start script again when data can be obtained"
+    exit 1
+fi
 echo "validator address: $VALIDATORADDRESS"
 
 if [ "$CHECKPERSISTENTPEERS" -eq 1 ]; then
@@ -52,7 +59,10 @@ if [ "$CHECKPERSISTENTPEERS" -eq 1 ]; then
     totpersistentpeerids=$(wc -w <<<$persistentpeerids)
     npersistentpeersmatchcount=0
     netinfo=$(curl -s "$url"/net_info)
-    if [ -z "$netinfo" ]; then echo "lcd appears to be down, start script again when data can be obtained"; exit 1; fi
+    if [ -z "$netinfo" ]; then
+        echo "lcd appears to be down, start script again when data can be obtained"
+        exit 1
+    fi
     for id in $persistentpeerids; do
         npersistentpeersmatch=$(grep -c "$id" <<<$netinfo)
         if [ $npersistentpeersmatch -eq 0 ]; then
@@ -73,9 +83,13 @@ status=$(curl -s "$url"/status)
 blockheight=$(jq -r '.result.sync_info.latest_block_height' <<<$status)
 blockinfo=$(curl -s "$url"/block?height="$blockheight")
 if [ $blockheight -gt $NPRECOMMITS ]; then
-    if [ "$(grep -c 'precommits' <<<$blockinfo)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$blockinfo)" != "0" ]; then versionstring="signatures"; else echo "json parameters of this version not recognised"; exit 1; fi
+    if [ "$(grep -c 'precommits' <<<$blockinfo)" != "0" ]; then versionstring="precommits"; elif [ "$(grep -c 'signatures' <<<$blockinfo)" != "0" ]; then versionstring="signatures"; else
+        echo "json parameters of this version not recognised"
+        exit 1
+    fi
 else
-    echo "wait for $NPRECOMMITS blocks and start again..."; exit 1
+    echo "wait for $NPRECOMMITS blocks and start again..."
+    exit 1
 fi
 
 nloglines=$(wc -l <$logfile)
@@ -94,23 +108,6 @@ while true; do
         blocktime=$(jq -r '.result.sync_info.latest_block_time' <<<$status)
         catchingup=$(jq -r '.result.sync_info.catching_up' <<<$status)
         if [ $catchingup == "false" ]; then catchingup="synced"; elif [ $catchingup == "true" ]; then catchingup="catchingup"; fi
-        isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$(curl -s "$url"/block?height="$blockheight"))
-        if [ "$isvalidator" != "0" ]; then
-            isvalidator="yes"
-            precommitcount=0
-            for ((i = $(expr $blockheight - $NPRECOMMITS + 1); i <= $blockheight; i++)); do
-                validatoraddresses=$(curl -s "$url"/block?height="$i")
-                validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
-                validatorprecommit=$(grep -c "$VALIDATORADDRESS" <<<$validatoraddresses)
-                precommitcount=$(expr $precommitcount + $validatorprecommit)
-            done
-            if [ $NPRECOMMITS -eq 0 ]; then pctprecommits="1.0"; else pctprecommits=$(echo "scale=2 ; $precommitcount / $NPRECOMMITS" | bc); fi
-            validatorinfo="isvalidator=$isvalidator pctprecommits=$pctprecommits"
-        else
-            isvalidator="no"
-            validatorinfo="isvalidator=$isvalidator"
-        fi
-
         if [ "$CHECKPERSISTENTPEERS" -eq 1 ]; then
             npersistentpeersmatch=0
             netinfo=$(curl -s "$url"/net_info)
@@ -121,11 +118,29 @@ while true; do
         else
             npersistentpeersoff=0
         fi
+        if [ "$VALIDATORMETRICS" == "on" ]; then
+            isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$(curl -s "$url"/block?height="$blockheight"))
+            if [ "$isvalidator" != "0" ]; then
+                isvalidator="yes"
+                precommitcount=0
+                for ((i = $(expr $blockheight - $NPRECOMMITS + 1); i <= $blockheight; i++)); do
+                    validatoraddresses=$(curl -s "$url"/block?height="$i")
+                    validatoraddresses=$(jq ".result.block.last_commit.${versionstring}[].validator_address" <<<$validatoraddresses)
+                    validatorprecommit=$(grep -c "$VALIDATORADDRESS" <<<$validatoraddresses)
+                    precommitcount=$(expr $precommitcount + $validatorprecommit)
+                done
+                if [ $NPRECOMMITS -eq 0 ]; then pctprecommits="1.0"; else pctprecommits=$(echo "scale=2 ; $precommitcount / $NPRECOMMITS" | bc); fi
+                validatorinfo="isvalidator=$isvalidator pctprecommits=$pctprecommits"
+            else
+                isvalidator="no"
+                validatorinfo="isvalidator=$isvalidator"
+            fi
+        fi
         status="$catchingup"
         now=$(date --rfc-3339=seconds)
         blockheightfromnow=$(expr $(date +%s -d "$now") - $(date +%s -d $blocktime))
         variables="status=$status blockheight=$blockheight tfromnow=$blockheightfromnow npeers=$npeers npersistentpeersoff=$npersistentpeersoff $validatorinfo"
-     else
+    else
         status="error"
         now=$(date --rfc-3339=seconds)
         variables="status=$status"
@@ -136,18 +151,21 @@ while true; do
 
     nloglines=$(wc -l <$logfile)
     if [ $nloglines -gt $LOGSIZE ]; then
-       case $LOGROTATION in
-          1)
-             mv $logfile "${logfile}.1"; touch $logfile
-             ;;
-          2)
-             echo "$(cat $logfile)" >> ${logfile}.1; > $logfile
-             ;;
-          3)
-             sed -i '1d' $logfile; if [ -f ${logfile}.1 ]; then rm ${logfile}.1; fi # no log rotation with option (3)
-             ;;
-          *)
-             ;;
+        case $LOGROTATION in
+        1)
+            mv $logfile "${logfile}.1"
+            touch $logfile
+            ;;
+        2)
+            echo "$(cat $logfile)" >>${logfile}.1
+            >$logfile
+            ;;
+        3)
+            sed -i '1d' $logfile
+            if [ -f ${logfile}.1 ]; then rm ${logfile}.1; fi # no log rotation with option (3)
+            ;;
+        *) ;;
+
         esac
     fi
 
@@ -166,8 +184,9 @@ while true; do
         ;;
     esac
 
-    pctprecommits=$(awk '{printf "%f", $0}' <<< "$pctprecommits")
+    pctprecommits=$(awk '{printf "%f", $0}' <<<"$pctprecommits")
     if [[ "$isvalidator" == "yes" ]] && [[ "$pctprecommits" < "1.0" ]]; then color=$colorW; fi
+    if [[ "$isvalidator" == "no" ]] && [[ "$VALIDATORMETRICS" == "on" ]]; then color=$colorW; fi
 
     logentry="$(sed 's/[^ ]*[\=]/'\\${color}'&'\\${noColor}'/g' <<<$logentry)"
     echo -e $logentry
@@ -175,7 +194,9 @@ while true; do
 
     variables_=""
     for var in $variables; do
-       var_=$(grep -Po '^[0-9a-zA-Z_-]*' <<<$var); var_="$var_=\"\""; variables_="$var_; $variables_"
+        var_=$(grep -Po '^[0-9a-zA-Z_-]*' <<<$var)
+        var_="$var_=\"\""
+        variables_="$var_; $variables_"
     done
     #echo $variables_
     eval $variables_
