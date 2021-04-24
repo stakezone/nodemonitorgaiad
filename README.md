@@ -6,9 +6,9 @@ A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consis
 nodemonitor.sh generates logs that look like:
 
 ```sh
-2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 pctprecommits=.95 npeers=13 npersistentpeersoff=0
-2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 pctprecommits=1.00 npeers=12 npersistentpeersoff=1
-2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 pctprecommits=1.00 npeers=13 npersistentpeersoff=0
+2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=.95
+2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 npeers=12 npersistentpeersoff=1 isvalidator=yes pctprecommits=1.00
+2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=1.00
 ```
 For the Zabbix server there is a log module for analyzing log data.
 
@@ -20,6 +20,7 @@ The log line entries are:
 * **pctprecommits** percentage of last n precommits from blockheight as configured in nodemonitor.sh
 * **npeers** number of connected peers
 * **npersistentpeersoff** number of disconnected persistent peers
+* **isvalidator** if validator metrics are enabled, can be {yes | no}
 
 ### Installation
 
