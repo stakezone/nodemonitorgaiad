@@ -17,10 +17,10 @@ The log line entries are:
 * **status** can be {scriptstarted | error | catchingup | synced} 'error' can have various causes, typically the gaiad process is down
 * **blockheight** blockheight from lcd call 
 * **tfromnow** time in seconds since blockheight
-* **pctprecommits** percentage of last n precommits from blockheight as configured in nodemonitor.sh
 * **npeers** number of connected peers
 * **npersistentpeersoff** number of disconnected persistent peers
 * **isvalidator** if validator metrics are enabled, can be {yes | no}
+* **pctprecommits** if validator metrics are enabled, percentage of last n precommits from blockheight as configured in nodemonitor.sh
 
 ### Installation
 
