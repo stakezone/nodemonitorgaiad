@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-07-15T03:39:20Z</date>
+    <date>2021-04-24T05:16:46Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -24,12 +24,35 @@
             </applications>
             <items>
                 <item>
+                    <name>nodemonitor isvalidator</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>logrt[{$NMLOGFILE},&quot;isvalidator=(\w*)&quot;,,,skip,\1,]</key>
+                    <delay>{$NMUPDATEINTERVAL}</delay>
+                    <history>5d</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <description>yes | no</description>
+                    <applications>
+                        <application>
+                            <name>Cosmos Gaiad</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{iregexp(no,#1)}=1</expression>
+                            <name>{$NMNODEID} isvalidator : no</name>
+                            <priority>HIGH</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
                     <name>nodemonitor npeers</name>
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;npeers=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>5d</history>
-                    <trends>14d</trends>
+                    <history>30d</history>
+                    <trends>90d</trends>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
@@ -56,8 +79,8 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;npersistentpeersoff=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>5d</history>
-                    <trends>14d</trends>
+                    <history>30d</history>
+                    <trends>90d</trends>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
@@ -77,8 +100,8 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;pctprecommits=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>5d</history>
-                    <trends>14d</trends>
+                    <history>30d</history>
+                    <trends>90d</trends>
                     <value_type>FLOAT</value_type>
                     <applications>
                         <application>
@@ -95,7 +118,7 @@
                         <trigger>
                             <expression>{last()}&lt;0.95 and {last()}&gt;0.5</expression>
                             <name>{$NMNODEID} 0.95 &gt; %precommits &gt; 0.5 : pct={ITEM.VALUE}</name>
-                            <priority>WARNING</priority>
+                            <priority>INFO</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                         <trigger>
@@ -111,7 +134,7 @@
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;status=(\w*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>5d</history>
+                    <history>30d</history>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
                     <description>scriptstarted | error | catchingup | synced&#13;
@@ -154,8 +177,8 @@ error can have various causes, typically the gaiad process is down.</description
                     <type>ZABBIX_ACTIVE</type>
                     <key>logrt[{$NMLOGFILE},&quot;tfromnow=([0-9\.]*)&quot;,,,skip,\1,]</key>
                     <delay>{$NMUPDATEINTERVAL}</delay>
-                    <history>5d</history>
-                    <trends>14d</trends>
+                    <history>30d</history>
+                    <trends>90d</trends>
                     <applications>
                         <application>
                             <name>Cosmos Gaiad</name>
@@ -165,7 +188,7 @@ error can have various causes, typically the gaiad process is down.</description
                         <trigger>
                             <expression>{last()}&gt;{$NMTLASTBLOCKFROMNOW}</expression>
                             <name>{$NMNODEID} tfromnow &gt; {$NMTLASTBLOCKFROMNOW} : T={ITEM.VALUE}</name>
-                            <priority>WARNING</priority>
+                            <priority>AVERAGE</priority>
                             <manual_close>YES</manual_close>
                         </trigger>
                     </triggers>
@@ -260,4 +283,3 @@ error can have various causes, typically the gaiad process is down.</description
         </graph>
     </graphs>
 </zabbix_export>
-
