@@ -119,7 +119,9 @@ while true; do
             npersistentpeersoff=0
         fi
         if [ "$VALIDATORMETRICS" == "on" ]; then
-            isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$(curl -s "$url"/block?height="$blockheight"))
+            #isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$(curl -s "$url"/block?height="$blockheight"))
+            validators=$(jq -r '.result.round_state.validators[]' <<<$(curl -s "$url"/dump_consensus_state))
+            isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$validators)
             if [ "$isvalidator" != "0" ]; then
                 isvalidator="yes"
                 precommitcount=0
