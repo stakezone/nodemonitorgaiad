@@ -1,4 +1,4 @@
-This project is intended pre-Stargate, a new Stargate version with many enhancements will be released under the repository 'nmoncosmos;.
+This project is intended pre-Stargate, a new Stargate version with many enhancements will be released under the repository 'nmoncosmos'.
 
 # nodemonitorgaiad
 A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consists of the shell script nodemonitor.sh for generating log files on the host and the template zbx_<n>_template_nodemonitorgaiad.xml for the Zabbix server, either version 4.x or 5.x.
@@ -8,9 +8,9 @@ A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consis
 nodemonitor.sh generates logs that look like:
 
 ```sh
-2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=.95
-2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 npeers=12 npersistentpeersoff=1 isvalidator=yes pctprecommits=1.00
-2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=1.00
+2020-04-02 01:15:24+00:00 status=synced blockheight=1557201 tfromnow=10 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=.95 pcttotcommits=.99
+2020-04-02 01:15:54+00:00 status=synced blockheight=1557207 tfromnow=7 npeers=12 npersistentpeersoff=1 isvalidator=yes pctprecommits=1.00 pcttotcommits=1.0
+2020-04-02 01:16:25+00:00 status=synced blockheight=1557212 tfromnow=9 npeers=13 npersistentpeersoff=0 isvalidator=yes pctprecommits=1.00 pcttotcommits=1.0
 ```
 For the Zabbix server there is a log module for analyzing log data.
 
