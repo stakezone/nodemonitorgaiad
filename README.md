@@ -1,3 +1,5 @@
+This project is intended pre-Stargate, a new Stargate version with many enhancements will be released under the repository 'nmoncosmos;.
+
 # nodemonitorgaiad
 A complete log file based Cosmos gaiad monitoring solution for Zabbix. It consists of the shell script nodemonitor.sh for generating log files on the host and the template zbx_<n>_template_nodemonitorgaiad.xml for the Zabbix server, either version 4.x or 5.x.
 
@@ -21,7 +23,8 @@ The log line entries are:
 * **npersistentpeersoff** number of disconnected persistent peers
 * **isvalidator** if validator metrics are enabled, can be {yes | no}
 * **pctprecommits** if validator metrics are enabled, percentage of last n precommits from blockheight as configured in nodemonitor.sh
-
+* **pcttotcommits** if validator metrics are enabled, percentage of total commits of the validator set at blockheight
+  
 ### Installation
 
 The script for the host has a configuration section on top where parameters can be set.
