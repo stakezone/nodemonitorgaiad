@@ -120,8 +120,11 @@ while true; do
         fi
         if [ "$VALIDATORMETRICS" == "on" ]; then
             #isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$(curl -s "$url"/block?height="$blockheight"))
-            validators=$(jq -r '.result.round_state.validators[]' <<<$(curl -s "$url"/dump_consensus_state))
+            consdump=$(curl -s "$url"/dump_consensus_state)
+            validators=$(jq -r '.result.round_state.validators[]' <<<$consdump)
             isvalidator=$(grep -c "$VALIDATORADDRESS" <<<$validators)
+            pcttotcommits=$(jq -r '.result.round_state.last_commit.votes_bit_array' <<<$consdump)
+            pcttotcommits=$(grep -Po "=\s+\K[^ ^]+" <<<$pcttotcommits)
             if [ "$isvalidator" != "0" ]; then
                 isvalidator="yes"
                 precommitcount=0
@@ -132,7 +135,7 @@ while true; do
                     precommitcount=$(expr $precommitcount + $validatorprecommit)
                 done
                 if [ $NPRECOMMITS -eq 0 ]; then pctprecommits="1.0"; else pctprecommits=$(echo "scale=2 ; $precommitcount / $NPRECOMMITS" | bc); fi
-                validatorinfo="isvalidator=$isvalidator pctprecommits=$pctprecommits"
+                validatorinfo="isvalidator=$isvalidator pctprecommits=$pctprecommits pcttotcommits=$pcttotcommits"
             else
                 isvalidator="no"
                 validatorinfo="isvalidator=$isvalidator"
